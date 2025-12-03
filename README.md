@@ -1,8 +1,8 @@
 # bd2-trabalho-final
-trabalho banco de dados
- Este Repositório tem a Descrição do Domínio do projeto Sistema de Locação de Veículos O principal objetivo do sistema é gerenciar todas as etapas do ciclo de vida de uma locação de veículos, desde a administração da frota e cadastro de clientes até a precificação e conclusão financeira das transações.
+A Descrição do Domínio do projeto Sistema de Locação de Veículos
+   O principal objetivo do sistema é gerenciar todas as etapas do ciclo de vida de uma locação de veículos, desde a administração da frota e cadastro de clientes até a precificação e conclusão financeira das transações.
 
-O domínio simula a operação de uma locadora que atua em múltiplas cidades, utilizando uma estrutura de filiais para gerenciar os atendimentos e a localização física dos veículos.
+   O domínio simula a operação de uma locadora que atua em múltiplas cidades, utilizando uma estrutura de filiais para gerenciar os atendimentos e a localização física dos veículos.
 
 2. Entidades Principais e Fluxo Operacional
 O sistema opera em torno de três pilares: a Frota, os Clientes e as Transações.
@@ -53,9 +53,11 @@ A integridade dos dados é garantida por PKs, FKs e Restrições (CHECK, UNIQUE)
 05_queries_select.sql	SELECTs com JOIN, agregações, CASE, subconsultas, e os testes de validação (incluindo o teste da PROCEDURE e da FUNCTION).
 06_view.sql	Criação das VIEWS (vw_faturamento_mensal, vw_utilizacao_frota).
 07_procedure_function.sql	Criação da FUNCTION (calcular_multa_atraso) e da PROCEDURE (registrar devolução), que utiliza a FUNCTION.
+
 Dependências e Configurações
 Para executar o sistema de locação de veículos projetado, você precisará atender às seguintes dependências e garantir algumas configurações básicas no ambiente de banco de dados.
 Dependências de SoftwareDependênciaVersão SugeridaFinalidadeSGBDMySQL 8.0+O código SQL (DDL, DML, Objetos) foi escrito em MySQL puro. Versões recentes (8.x) garantem suporte completo aos recursos utilizados, como DATETIME, ENUM, PROCEDURE e FUNCTION.Cliente SQLMySQL Workbench, DBeaver, HeidiSQL, ou linha de comando (mysql -u...).Necessário para conectar-se ao servidor MySQL, criar o banco de dados e executar os scripts.
+
 Glossário das Tabelas e Campos
 Aqui está o glossário das tabelas propostas para o sistema de locação de veículos, detalhando a finalidade e os campos principais de cada uma.
 CLIENTE Armazena os dados cadastrais dos clientes que realizam reservas e locações.CampoTipoDescriçãoRestriçõesidClienteINTIdentificador único do cliente.PK, AUTO_INCREMENTnomeVARCHAR(150)Nome completo do cliente.NOT NULLcpfCHAR(11)Cadastro de Pessoa Física.NOT NULL, UNIQUEemailVARCHAR(100)Endereço de e-mail.UNIQUEtelefoneVARCHAR(15)Telefone de contato.dtCadastroDATETIMEData e hora do cadastro do cliente.NOT NULL, DEFAULT CURRENT_TIMESTAMP
@@ -64,7 +66,8 @@ FILIAL Armazena as unidades físicas da locadora onde são realizadas retiradas 
 CATEGORIA Define os tipos de veículos disponíveis para locação (ex: Econômico, SUV).CampoTipoDescriçãoRestriçõesidCategoriaINTIdentificador único da categoria.PK, AUTO_INCREMENTnomeVARCHAR(40)Nome da categoria (ex: Luxo).NOT NULLdescricaoVARCHAR(255)Breve descrição da categoria.valorDiariaPadraoDECIMAL(10,2)Valor base da diária de locação para esta categoria.NOT NULL, CHECK (> 0) (Bônus)
 VEICULO Armazena os dados de cada carro pertencente à frota da locadora.CampoTipoDescriçãoRestriçõesidVeiculoINTIdentificador único do veículo.PK, AUTO_INCREMENTplacaVARCHAR(10)Placa de identificação do veículo.NOT NULL, UNIQUErenavamVARCHAR(15)Registro Nacional de Veículos Automotores.UNIQUEmarcaVARCHAR(50)Fabricante do veículo (ex: Fiat, Ford).NOT NULLmodeloVARCHAR(50)Modelo do veículo (ex: Palio, Fiesta).NOT NULLanoINTAno de fabricação.NOT NULLidCategoriaINTCategoria a que o veículo pertence.NOT NULL, FK (CATEGORIA)idFilialAtualINTFilial onde o veículo está fisicamente.NOT NULL, FK (FILIAL)statusENUMSituação atual (Ex: 'Disponível', 'Locado', 'Manutenção', 'Baixado').NOT NULLquilometragemRevisaoINTQuilometragem na qual a próxima revisão é devida.(Adicionado no ALTER TABLE)
  RESERVA Registra a intenção de locação de um cliente, com datas e locais previstos.CampoTipoDescriçãoRestriçõesidReservaINTIdentificador único da reserva.PK, AUTO_INCREMENTidClienteINTCliente que realizou a reserva.NOT NULL, FK (CLIENTE)idVeiculoINTVeículo reservado.NOT NULL, FK (VEICULO)idFilialRetiradaINTFilial prevista para a retirada do veículo.NOT NULL, FK (FILIAL)idFilialDevolucaoPrevINTFilial prevista para a devolução.NOT NULL, FK (FILIAL)dtInicioPrevDATETIMEData e hora prevista para a retirada.NOT NULLdtFimPrevDATETIMEData e hora prevista para a devolução.NOT NULLstatusReservaENUMSituação (Ex: 'Confirmada', 'Cancelada', 'Em Locação', 'Concluída').NOT NULL
- LOCACAORegistra o contrato de locação em si, incluindo todos os valores e dados reais de retirada/devolução.CampoTipoDescriçãoRestriçõesidLocacaoINTIdentificador único da locação.PK, AUTO_INCREMENTidReservaINTReserva que deu origem a esta locação.UNIQUE, FK (RESERVA)idClienteINTCliente responsável pela locação.NOT NULL, FK (CLIENTE)idVeiculoINTVeículo locado.NOT NULL, FK (VEICULO)idFilialRetiradaINTFilial onde o carro foi retirado.NOT NULL, FK (FILIAL)dtRetiradaDATETIMEData e hora real da retirada.NOT NULLkmRetiradaINTQuilometragem do veículo no momento da retirada.NOT NULLidFilialDevolucaoINTFilial onde o carro foi devolvido.FK (FILIAL)dtDevolucaoDATETIMEData e hora real da devolução.kmDevolucaoINTQuilometragem do veículo no momento da devolução.CHECK (>= kmRetirada) (Bônus)valorDiariaDECIMAL(10,2)Valor real da diária aplicada na locação.NOT NULLtaxasDECIMAL(10,2)Valores extras (seguro, acessórios, etc.).NOT NULL, DEFAULT 0.00multaDECIMAL(10,2)Multa por atraso na devolução.NOT NULL, DEFAULT 0.00valorFinalDECIMAL(10,2)Total calculado da locação (Diárias + Taxas + Multa).
+ LOCACAO Registra o contrato de locação em si, incluindo todos os valores e dados reais de retirada/devolução.CampoTipoDescriçãoRestriçõesidLocacaoINTIdentificador único da locação.PK, AUTO_INCREMENTidReservaINTReserva que deu origem a esta locação.UNIQUE, FK (RESERVA)idClienteINTCliente responsável pela locação.NOT NULL, FK (CLIENTE)idVeiculoINTVeículo locado.NOT NULL, FK (VEICULO)idFilialRetiradaINTFilial onde o carro foi retirado.NOT NULL, FK (FILIAL)dtRetiradaDATETIMEData e hora real da retirada.NOT NULLkmRetiradaINTQuilometragem do veículo no momento da retirada.NOT NULLidFilialDevolucaoINTFilial onde o carro foi devolvido.FK (FILIAL)dtDevolucaoDATETIMEData e hora real da devolução.kmDevolucaoINTQuilometragem do veículo no momento da devolução.CHECK (>= kmRetirada) (Bônus)valorDiariaDECIMAL(10,2)Valor real da diária aplicada na locação.NOT NULLtaxasDECIMAL(10,2)Valores extras (seguro, acessórios, etc.).NOT NULL, DEFAULT 0.00multaDECIMAL(10,2)Multa por atraso na devolução.NOT NULL, DEFAULT 0.00valorFinalDECIMAL(10,2)Total calculado da locação (Diárias + Taxas + Multa).
+ 
  Decisões de Modelagem (Modelo Lógico e Físico)
 Aqui estão as principais decisões de modelagem tomadas para estruturar o banco de dados do sistema de locação de veículos, conforme solicitado no exercício.
 Separação de RESERVA e LOCACAO (Chave de Modelagem)
@@ -111,6 +114,7 @@ Não há repetição de dados desnecessária (ex: dados da cidade/UF estão apen
 Todos os campos não-chave (atributos) são dependentes da chave primária (PK) e não de outros campos não-chave. (Ex: o nome do funcionário depende do idFunc, não do idFilial).
 
 Índices Secundários (Físico): A decisão de criar índices UNIQUE em campos de busca essenciais (CLIENTE.cpf, VEICULO.placa) garante a integridade dos dados e acelera as buscas.
+
 Autoria:Kênya Magalhães
 Disciplina:Banco de Dados II - Trabalho Final
 BANCO DE DADOS RELACIONAL - SISTEMA DE LOCAÇÃO DE VEÍCULOS - MYSQL
